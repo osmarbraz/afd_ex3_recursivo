@@ -3,14 +3,21 @@ import javax.swing.JOptionPane;
 
 public class Principal {
 
+    /**
+     * Estados do AFD.
+     */
+    enum Estado {
+        S0, S1, S2
+    }
+
     //Armazena o estado inicial
-    static int estado_inicial = 0;
+    static Estado estado_inicial = Estado.S0;
     //Armazena o estado final
-    static int estado_final = 2;
+    static Estado estado_final = Estado.S2;
     //Armazena o estado atual
-    static int estado_atual = estado_inicial;
-    //Armazena o estado próximo
-    static int estado_proximo = -1;
+    static Estado estado_atual = estado_inicial;
+    //Armazena se a entrada é válida
+    static boolean valido = true;
 
     //Indice da letra da entrada
     static int i = 0;
@@ -28,88 +35,73 @@ public class Principal {
     }
 
     // Estado 0
-    public static void avaliaEstado0(String entrada) {
+    public static void avaliaEstadoS0(String entrada) {
         //Atualiza o estado atual
-        estado_atual = 0;
+        estado_atual = Estado.S0;
+        
         //Recupera um caracter
         char avaliar = proximoCaracter(entrada);
+        
         // Estado 0 para 1
         if (avaliar == 'a') {
-            //Guarda o próximo estado
-            estado_proximo = 1;
-
-            avaliaEstado1(entrada);
+            //Avança para o próximo estado
+            avaliaEstadoS1(entrada);
         } else {
-            estado_proximo = -1;
+            valido = false;
         }
     }
 
     // Estado 1
-    public static void avaliaEstado1(String entrada) {
+    public static void avaliaEstadoS1(String entrada) {
         //Atualiza o estado atual
-        estado_atual = estado_proximo;
-        
+        estado_atual = Estado.S1;
+
         //Recupera um caracter
         char avaliar = proximoCaracter(entrada);
 
         // Estado 1 para 1
         if (avaliar == 'b') {
-            //Guarda o próximo estado
-            estado_proximo = 1;
-
-            avaliaEstado1(entrada);
-            
-        } else {        
+            //Avança para o próximo estado
+            avaliaEstadoS1(entrada);
+        } else {
             // Estado 1 para 1
-           if (avaliar == 'c') {
-               //Guarda o próximo estado
-               estado_proximo = 1;
-
-               avaliaEstado1(entrada);
-           } else {        
+            if (avaliar == 'c') {
+                //Avança para o próximo estado
+                avaliaEstadoS1(entrada);
+            } else {
                 // Estado 1 para 1
-               if (avaliar == 'd') {
-                   //Guarda o próximo estado
-                   estado_proximo = 1;
-
-                   avaliaEstado1(entrada);
-               } else {        
+                if (avaliar == 'd') {
+                    //Avança para o próximo estado
+                    avaliaEstadoS1(entrada);
+                } else {
                     // Estado 1 para 2
                     if (avaliar == 'e') {
-                        //Guarda o próximo estado
-                        estado_proximo = 2;
-
-                        avaliaEstado2(entrada);
+                        //Avança para o próximo estado
+                        avaliaEstadoS2(entrada);
                     } else {
-                       estado_proximo = -1;
-                    }     
-               }
-           }
+                        valido = false;
+                    }
+                }
+            }
         }
     }
-       
+
     // Estado 2 (Estado final)
-    public static void avaliaEstado2(String entrada) {        
+    public static void avaliaEstadoS2(String entrada) {
         //Atualiza o estado atual
-        estado_atual = estado_proximo;
-        
-        //Se tem caracteres a avaliar
+        estado_atual = Estado.S2;
+
+        //Se tem caracteres para ler torna inválida a palavra
         if (i < entrada.length()) {
-            //Recupera um caracter
-            char avaliar = proximoCaracter(entrada);
-            
-            //Estados a avaliar vão aqui
-            
             //Entrada inválida
-            estado_proximo = -1;
-            avaliaEstado2(entrada);
-        }        
+            valido = false;
+        }
     }
 
     public static void main(String args[]) {
-        
+
         System.out.println("\nImplementacao recursiva:\n");
-        
+
         String entrada = "";
         if (args.length != 0) {
             entrada = args[0];
@@ -118,10 +110,10 @@ public class Principal {
         }
 
         //Avalia o estado inicial
-        avaliaEstado0(entrada);        
+        avaliaEstadoS0(entrada);
 
-        //Verifica se o estado atual é igual ao estado final
-        if (estado_atual == estado_final) {
+        ///Verifica se o estado atual é igual ao estado final
+        if ((estado_atual == estado_final) && (valido == true)) {
             System.out.println("Entrada valida   :" + entrada);
         } else {
             System.out.println("Entrada invalida :" + entrada);
